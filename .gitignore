@@ -1,0 +1,32 @@
+# Ignore all .iso files, anywhere in the project
+*.iso
+**/*.iso
+
+# Other typical OSDev build outputs
+build/
+*.img
+*.bin
+*.o
+*.map
+*.lst
+
+# Editor & system junk
+*.swp
+*.swo
+*.tmp
+*~
+.DS_Store
+Thumbs.db
+
+# Optional config/IDE directories
+*.ini
+.vscode/
+.idea/
+
+PMode/build
+PMode/*.ini
+
+*.err
+**/*.err
+**/**/*.err
+**/**/**/*.err
