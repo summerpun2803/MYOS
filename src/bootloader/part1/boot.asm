@@ -284,8 +284,8 @@ msg_kernel_not_found:   db 'STAGE2.BIN file not found!', ENDL, 0
 file_kernel_bin:        db 'STAGE2  BIN'
 kernel_cluster:         dw 0
 
-KERNEL_LOAD_SEGMENT     equ 0x2000
-KERNEL_LOAD_OFFSET      equ 0
+KERNEL_LOAD_SEGMENT     equ 0x0
+KERNEL_LOAD_OFFSET      equ 0x500
 
 times 510 - ($ - $$) db 0
 dw 0AA55h

@@ -30,3 +30,5 @@ PMode/*.ini
 **/*.err
 **/**/*.err
 **/**/**/*.err
+
+src/bootloader/part2_old

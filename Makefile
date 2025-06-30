@@ -1,18 +1,8 @@
-ASM=nasm
-QEMU=qemu-system-i386
-SRC_DIR=src
-BUILD_DIR=build
-BOCHS=bochs
-CC=gcc
-TOOLS_DIR=tools
-
-
-CC16 = /usr/bin/watcom/binl/wcc
-LD16 = /usr/bin/watcom/binl/wlink
+include config.mk
 
 .PHONY: all floppy_image kernel bootloader clean always debug test
 
-all: floppy_image tools_fat
+all: floppy_image
 
 #
 # Floppy image
@@ -36,10 +26,10 @@ $(BUILD_DIR)/main_floppy.img: bootloader kernel
 bootloader: stage1 stage2
 
 stage1 : always
-	$(MAKE) -C $(SRC_DIR)/bootloader/part1 BUILD_DIR=$(abspath $(BUILD_DIR))
+	$(MAKE) -C $(SRC_DIR)/bootloader/part1 
 
 stage2 : always
-	$(MAKE) -C $(SRC_DIR)/bootloader/part2 BUILD_DIR=$(abspath $(BUILD_DIR))
+	$(MAKE) -C $(SRC_DIR)/bootloader/part2
 #
 # Kernel
 #
@@ -49,10 +39,10 @@ kernel: always
 #
 # Tools
 #
-tools_fat: $(BUILD_DIR)/fat
-$(BUILD_DIR)/fat: always $(TOOLS_DIR)/fat.c
+tools_fat: $(BUILD_DIR)/tools/fat
+$(BUILD_DIR)/tools/fat: always tools/fat/fat.c
 	mkdir -p $(BUILD_DIR)/tools
-	$(CC) -g -o $(BUILD_DIR)/tools/fat $(TOOLS_DIR)/fat.c
+	$(MAKE) -C tools
 
 #
 # Always
