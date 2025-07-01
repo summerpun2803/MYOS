@@ -32,3 +32,4 @@ PMode/*.ini
 **/**/**/*.err
 
 src/bootloader/part2_old
+tools

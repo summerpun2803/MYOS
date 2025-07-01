@@ -5,7 +5,7 @@
 // #include "fat.h"
 
 void Rmode_puts(const char* str){
-    
+
     while(*str){
 
         x86_Rmode_putc(*str);
@@ -17,7 +17,11 @@ void __attribute__((cdecl)) _cstart_ (uint16_t bootDrive){
     printf("STAGE 2: Hello %d \n");
     
     Rmode_puts("printing from real mode");
+    uint8_t driveTypeOut;
+    uint16_t cylinderOut, SectorOut, headsOut;
+    x86_Disk_Param(bootDrive, &driveTypeOut, &cylinderOut, &SectorOut, &headsOut);
 
+    printf("driveTypeOut: %d ,cylinderOut: %d ,SectorOut: %d ,headsOut: %d ",  driveTypeOut, cylinderOut, SectorOut, headsOut);
     // if(!Disk_Init(&disk, bootDrive)){
     //     printf("DISK: Initailization Error");
     // }
