@@ -1,57 +1,41 @@
 #include <stdint.h>
 #include "stdio.h"
-#include "x86.h"
-// #include "disk.h"
-// #include "fat.h"
+#include "disk.h"
+#include "fat.h"
 
-void Rmode_puts(const char* str){
-
-    while(*str){
-
-        x86_Rmode_putc(*str);
-        str++;
-    }
-}
 void __attribute__((cdecl)) _cstart_ (uint16_t bootDrive){
-    // DISK disk;
-    printf("STAGE 2: Hello %d \n");
+
+    clrscr();
+
+    printf("STAGE 2: Hello\n");
+
+    DISK disk;
+
+    if(!Disk_Init(&disk, bootDrive)){
+        
+        printf("DISK: Initailization Error\n");
+        goto end;
+    }
+    printf("STAGE 2: Disk Initailization Done\n");
+
+    if(!FAT_Initialize(&disk)){
+        printf("FAT: Initialization Error\n");
+        goto end;
+    }
+    printf("STAGE 2: FAT Initailization Done\n");
     
-    Rmode_puts("printing from real mode");
-    uint8_t driveTypeOut;
-    uint16_t cylinderOut, SectorOut, headsOut;
-    x86_Disk_Param(bootDrive, &driveTypeOut, &cylinderOut, &SectorOut, &headsOut);
+    char buffer[100];
+    uint32_t read;
+    FAT_File* fd = FAT_Open(&disk, "mydir/test.txt");
+    while ((read = FAT_Read(&disk, fd, sizeof(buffer), buffer)))
+    {
+        for (uint32_t i = 0; i < read; i++)
+        {
+            putc(buffer[i]);
+        }
+    }
+    FAT_Close(fd);
 
-    printf("driveTypeOut: %d ,cylinderOut: %d ,SectorOut: %d ,headsOut: %d ",  driveTypeOut, cylinderOut, SectorOut, headsOut);
-    // if(!Disk_Init(&disk, bootDrive)){
-    //     printf("DISK: Initailization Error");
-    // }
-    // printf("STAGE 2: Disk Initailization Done\r\n");
-
-    // if(!FAT_Initialize(&disk)){
-    //     printf("FAT: Initialization Error \r\n");
-    // }
-    // // FAT_File far* fd = FAT_Open(&disk, "/");
-    // DirectoryEntry entry;
-    // // int i=0;
-    // // while (ReadFileEntry(&disk, fd, &entry) && i++ < 5){
-    // //     for (int i = 0; i < 11; i++)
-    // //         putc(entry.Name[i]);
-    // //     printf("\r\n");
-    // // }
-    // // FAT_Close(fd);
-
-    // char buffer[100];
-    // uint32_t read;
-    // FAT_File far* fd = FAT_Open(&disk, "mydir/test.txt");
-    // while ((read = FAT_Read(&disk, fd, sizeof(buffer), buffer)))
-    // {
-    //     for (uint32_t i = 0; i < read; i++)
-    //     {
-    //         if (buffer[i] == '\n')
-    //             putc('\r');
-    //         putc(buffer[i]);
-    //     }
-    // }
-    // FAT_Close(fd);
-    for(;;);
+end:
+    for (;;);
 }

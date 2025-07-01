@@ -21,7 +21,7 @@
 
 
 %macro x86_EnterProtectedMode 0
-
+    [bits 16]
     cli
 
     mov eax, cr0
@@ -36,6 +36,23 @@
     mov ax, 0x10          ; Data segment selector (3rd GDT entry)
     mov ds, ax
     mov ss, ax
+
+%endmacro
+
+; Convert linear address to segment:offset address
+; Args:
+;    1 - linear address
+;    2 - (out) target segment (e.g. es)
+;    3 - target 32-bit register to use (e.g. eax)
+;    4 - target lower 16-bit half of #3 (e.g. ax)
+
+%macro LinearToSegOffset 4
+
+    mov %3, %1      ; linear address to eax
+    shr %3, 4
+    mov %2, %4
+    mov %3, %1      ; linear address to eax
+    and %3, 0xf
 
 %endmacro
 
@@ -89,17 +106,17 @@ x86_Rmode_putc:
 ;
 global x86_Disk_Param
 x86_Disk_Param:
-
+    [bits 32]
     push ebp
     mov ebp, esp
 
     x86_EnterRealMode
-
+    [bits 16]
     push es
     push bx
     push di
     push si
-
+    
     mov ah, 08h
     mov dl, [ebp + 8]
     mov di, 0
@@ -107,8 +124,8 @@ x86_Disk_Param:
     stc
     int 0x13
 
-    mov ax, 1
-    sbb ax, 0
+    mov eax, 1
+    sbb eax, 0
 
     mov si, [bp + 12]
     mov [si], bl
@@ -133,8 +150,12 @@ x86_Disk_Param:
     pop bx
     pop es
     
-    x86_EnterProtectedMode
+    push eax
 
+    x86_EnterProtectedMode
+    [bits 32]
+
+    pop eax
     mov esp, ebp
     pop ebp
     ret
@@ -157,12 +178,14 @@ x86_Disk_Reset:
     stc
     int 13h
 
-    mov ax, 1
-    sbb ax, 0           ; 1 on success, 0 on fail   
+    mov eax, 1
+    sbb eax, 0           ; 1 on success, 0 on fail   
 
+    push eax
     x86_EnterProtectedMode
 
     ; restore old call frame
+    pop eax
     mov esp, ebp
     pop ebp
     ret
@@ -179,48 +202,107 @@ x86_Disk_Reset:
 ;    void* bufferOut
 ; );
 ;
+; global x86_Disk_Read
+; x86_Disk_Read:
+;     [bits 32]
+;     push ebp
+;     mov ebp, esp
+
+;     x86_EnterRealMode
+;     [bits 16]
+;     push es
+;     push ebx
+
+;     mov ax, [bp + 12]    
+;     mov ch, al              ;   ch = cylinder 6 bits
+
+;     mov ax, [bp + 16]
+;     mov cl, al
+;     and cl, 3Fh
+
+;     shr ax, 2
+;     and al, 0xc0
+;     or cl, al               ;   cl = cylinder upper 2 bits
+
+;     mov ax, [bp + 32]       
+;     mov es, ax
+;     mov bx, [bp + 28]       ;   setting ES:BX to output buffer
+
+;     mov ah, 0x02
+;     mov al, [bp + 24]       ;   al = sector count
+
+;     mov dl, [bp + 8]        ;   dl = drive number
+
+;     mov dh, [bp + 20]       ;   dh = head
+;     stc
+;     int 13h
+
+;     mov ax, 1
+;     sbb ax, 0
+;     movzx eax, ax   
+
+;     pop ebx
+;     pop es
+;     push eax
+
+;     x86_EnterProtectedMode
+;     [bits 32]
+
+;     pop eax
+;     mov esp, ebp
+;     pop ebp
+;     ret
+
 global x86_Disk_Read
 x86_Disk_Read:
 
-    push ebp
-    mov ebp, esp
+    ; make new call frame
+    push ebp             ; save old call frame
+    mov ebp, esp          ; initialize new call frame
 
     x86_EnterRealMode
 
+    ; save modified regs
+    push ebx
     push es
-    push bx
 
-    mov ax, [ebp + 12]    
-    mov ch, al              ;   ch = cylinder 6 bits
+    ; setup args
+    mov dl, [bp + 8]    ; dl - drive
 
-    mov ax, [bp + 16]
-    mov cl, al
-    and cl, 3Fh
+    mov ch, [bp + 12]    ; ch - cylinder (lower 8 bits)
+    mov cl, [bp + 13]    ; cl - cylinder to bits 6-7
+    shl cl, 6
+    
+    mov al, [bp + 16]    ; cl - sector to bits 0-5
+    and al, 3Fh
+    or cl, al
 
-    shr ax, 2
-    and al, 0xc0
-    or cl, al               ;   cl = cylinder upper 2 bits
+    mov dh, [bp + 20]   ; dh - head
 
-    mov ax, [bp + 32]       
-    mov es, ax
-    mov bx, [bp + 28]       ;   setting ES:BX to output buffer
+    mov al, [bp + 24]   ; al - count
 
-    mov ah, 0x02
-    mov al, [bp + 24]       ;   al = sector count
+    LinearToSegOffset [bp + 28], es, ebx, bx
 
-    mov dl, [bp + 8]        ;   dl = drive number
-
-    mov dh, [bp + 20]       ;   dh = head
+    ; call int13h
+    mov ah, 02h
     stc
-    int 0x13
+    int 13h
 
-    mov ax, 1
-    sbb ax, 0   
+    ; set return value
+    mov eax, 1
+    sbb eax, 0           ; 1 on success, 0 on fail   
 
-    pop bx
+    ; restore regs
     pop es
+    pop ebx
 
-    x86_EnterRealMode
+    push eax
+
+    x86_EnterProtectedMode
+
+    pop eax
+
+    ; restore old call frame
     mov esp, ebp
     pop ebp
     ret
