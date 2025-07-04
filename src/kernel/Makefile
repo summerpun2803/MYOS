@@ -1,14 +1,31 @@
-ASM ?= nasm
-BUILD_DIR ?= ../../build
-SRC = kernel.asm
-OUTPUT = $(BUILD_DIR)/kernel.bin 
+TARGET_ASMFLAGS +=-f elf
+TARGET_CFLAGS += -ffreestanding -nostdlib
+TARGET_LIBS += -lgcc
+TARGET_LINKFLAGS += -T linker.ld -nostdlib
 
-.PHONY: all clean
+SOURCES_C=$(wildcard *.c)
+SOURCES_ASM=$(wildcard *.asm)
+OBJECTS_C=$(patsubst %.c, $(BUILD_DIR)/kernel/c/%.obj, $(SOURCES_C))
+OBJECTS_ASM=$(patsubst %.asm, $(BUILD_DIR)/kernel/asm/%.obj, $(SOURCES_ASM))
 
-all: $(OUTPUT)
+.PHONY: all kernel clean always
 
-$(OUTPUT): $(SRC)
-	$(ASM) $(SRC) -f bin -o $(OUTPUT)
+all: kernel
+
+kernel: $(BUILD_DIR)/kernel.bin
+
+$(BUILD_DIR)/kernel.bin: $(OBJECTS_ASM) $(OBJECTS_C)
+	$(TARGET_LD) $(TARGET_LINKFLAGS) -Wl,-Map=$(BUILD_DIR)/kernel.map -o $@ $^ $(TARGET_LIBS)
+
+$(BUILD_DIR)/kernel/c/%.obj: %.c always
+	$(TARGET_CC) $(TARGET_CFLAGS) -c -o $@ $<
+
+$(BUILD_DIR)/kernel/asm/%.obj: %.asm always
+	$(TARGET_ASM) $(TARGET_ASMFLAGS) -o $@ $<
+
+always:
+	mkdir -p $(BUILD_DIR)/kernel/c
+	mkdir -p $(BUILD_DIR)/kernel/asm
 
 clean:
-	rm -f $(OUTPUT)
+	rm -f *.err

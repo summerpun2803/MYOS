@@ -7,8 +7,9 @@
 #define SECTOR_SIZE             512
 #define MAX_PATH_SIZE           256
 #define MAX_FILE_HANDLES        10
-#define ROOT_DIRECTORY_HANDLE   -1
-#define MEMORY_FAT_ADDR     ((void*)0x00005000)
+#define ROOT_DIRECTORY_HANDLE   -14
+
+#define MEMORY_FAT_ADDR     ((void*)0x20000)
 #define MAX_PATH_SIZE           256
 
 

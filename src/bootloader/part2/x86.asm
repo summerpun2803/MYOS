@@ -48,10 +48,10 @@
 
 %macro LinearToSegOffset 4
 
-    mov %3, %1      ; linear address to eax
+    mov %3, %1
     shr %3, 4
     mov %2, %4
-    mov %3, %1      ; linear address to eax
+    mov %3, %1
     and %3, 0xf
 
 %endmacro
@@ -202,57 +202,6 @@ x86_Disk_Reset:
 ;    void* bufferOut
 ; );
 ;
-; global x86_Disk_Read
-; x86_Disk_Read:
-;     [bits 32]
-;     push ebp
-;     mov ebp, esp
-
-;     x86_EnterRealMode
-;     [bits 16]
-;     push es
-;     push ebx
-
-;     mov ax, [bp + 12]    
-;     mov ch, al              ;   ch = cylinder 6 bits
-
-;     mov ax, [bp + 16]
-;     mov cl, al
-;     and cl, 3Fh
-
-;     shr ax, 2
-;     and al, 0xc0
-;     or cl, al               ;   cl = cylinder upper 2 bits
-
-;     mov ax, [bp + 32]       
-;     mov es, ax
-;     mov bx, [bp + 28]       ;   setting ES:BX to output buffer
-
-;     mov ah, 0x02
-;     mov al, [bp + 24]       ;   al = sector count
-
-;     mov dl, [bp + 8]        ;   dl = drive number
-
-;     mov dh, [bp + 20]       ;   dh = head
-;     stc
-;     int 13h
-
-;     mov ax, 1
-;     sbb ax, 0
-;     movzx eax, ax   
-
-;     pop ebx
-;     pop es
-;     push eax
-
-;     x86_EnterProtectedMode
-;     [bits 32]
-
-;     pop eax
-;     mov esp, ebp
-;     pop ebp
-;     ret
-
 global x86_Disk_Read
 x86_Disk_Read:
 

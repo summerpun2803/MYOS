@@ -124,7 +124,7 @@ bool ReadFileEntry(DISK *disk, FAT_File  * file, DirectoryEntry *entry)
 
 bool FAT_FindFile(DISK *disk, FAT_File  * file, const char* name, DirectoryEntry *BufferOut)
 {
-    char fatName[11];
+    char fatName[12];
     DirectoryEntry entry;
 
     memset(fatName, ' ', sizeof(fatName));
@@ -132,20 +132,21 @@ bool FAT_FindFile(DISK *disk, FAT_File  * file, const char* name, DirectoryEntry
 
     const char* ext = strchr(name, '.');
     if (ext == NULL)
-        ext = name + 11;
-
-    for(int i=0; i<8 && name[i] && name[i] !='.'; i++){
+        ext = name + 10;
+    
+    for(int i=0; name[i] && name[i] != '\0' && name + i < ext; i++){
         fatName[i] = toUpper(name[i]);
     }
-    if(ext != NULL){
-        for(int i=0; i<3 && ext[i+1]; i++){
-            fatName[i + 8] = toUpper(ext[i + 1]);
+    if(*ext == '.'){
+        *ext++;
+        for(int i=0; i<3 && *ext != '\0'; i++){
+            fatName[i + 8] = toUpper(ext[i]);
         }
     }
-    printf("%s\n", fatName);
+    printf("FAT NAME: [%s]\n", fatName);
     while(ReadFileEntry(disk, file, &entry)){
-        printf("%s\n", entry.Name);
-        if(memcmp(fatName, entry.Name, 4) == 0){
+        printf("[%s]\n", entry.Name);
+        if(memcmp(fatName, entry.Name, 5) == 0){
             *BufferOut = entry;
             return true;
         }
@@ -266,7 +267,7 @@ uint32_t FAT_Read(DISK* disk, FAT_File  * file, uint32_t byteCount, void* dataOu
 
 }
 
-FAT_File  * FAT_OpenEntry(DISK *disk, DirectoryEntry *entry)
+FAT_File * FAT_OpenEntry(DISK *disk, DirectoryEntry *entry)
 {
     int handle = -1;
 

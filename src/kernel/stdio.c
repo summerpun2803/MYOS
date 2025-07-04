@@ -209,12 +209,3 @@ void hexdump(const uint8_t* data, uint32_t length) {
     }
     puts("\n");
 }
-
-void Rmode_puts(const char* str){
-
-    while(*str){
-
-        x86_Rmode_putc(*str);
-        str++;
-    }
-}
