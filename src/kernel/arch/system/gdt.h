@@ -32,7 +32,11 @@ extern const uint8_t flags_byte_32bit;
 extern const uint8_t flags_4k_16bit;
 extern const uint8_t flags_byte_16bit;
 
-GDTEntry createEntry( uint32_t base, 
+GDTEntry createGDTEntry( uint32_t base, 
                       uint16_t limit, 
                       uint8_t access, 
                       uint8_t flags );
+                      
+void init_gdt();
+
+void __attribute__((cdecl)) x86_GDT_Setup(GDTDescriptor *descriptor, uint16_t code_seg, uint16_t data_seg);
