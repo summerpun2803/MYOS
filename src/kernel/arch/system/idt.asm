@@ -1,5 +1,17 @@
 [bits 32]
 
+%macro ISR_NOERR 1
+global isr%1
+extern isr%1_handler
+isr%1:
+    cli
+    pusha
+    call isr%1_handler
+    popa
+    sti
+    iret
+%endmacro
+
 global x86_IDT_Setup
 x86_IDT_Setup:
 
@@ -13,12 +25,5 @@ x86_IDT_Setup:
     pop ebp
     ret
 
-global isr0
-extern isr0_handler
-isr0:
-    cli
-    pusha
-    call isr0_handler
-    popa
-    sti
-    iret
+ISR_NOERR 0
+ISR_NOERR 1

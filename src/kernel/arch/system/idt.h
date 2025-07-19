@@ -20,7 +20,6 @@ typedef struct
 
 extern uint8_t Interrupt_gate;
 extern uint8_t Trap_gate;
-extern void isr0();
 
 IDT_GATE createIDTEntry(uint32_t Offset, uint16_t Segement_Selector, uint8_t Type);
 void __attribute__((cdecl)) x86_IDT_Setup(IDT_Descriptor *descriptor);

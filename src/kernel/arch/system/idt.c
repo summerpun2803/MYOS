@@ -1,5 +1,6 @@
 #include "idt.h"
 #include "stdio.h"
+#include "isr.h"
 
 uint8_t Interrupt_gate=0x8E;
 uint8_t Trap_gate=0x8F;
@@ -16,17 +17,13 @@ IDT_GATE createIDTEntry(uint32_t Offset, uint16_t Segement_Selector, uint8_t Typ
     return gate;
 }
 
-IDT_GATE idt[1];
+IDT_GATE idt[2];
 IDT_Descriptor descriptor={sizeof(idt)-1, idt};
-
-void isr0_handler() {
-    printf("Interrupt: Divide by zero!\n");
-    for (;;);
-}
 
 void init_idt()
 {
     idt[0] = createIDTEntry((uint32_t)&isr0, 0x08, Interrupt_gate);
+    idt[1] = createIDTEntry((uint32_t)&isr1, 0x08, Interrupt_gate);
     x86_IDT_Setup(&descriptor);
 }
 
