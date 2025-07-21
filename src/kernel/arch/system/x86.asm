@@ -20,3 +20,7 @@ x86_inb:
     in al, dx              ; Read byte from port DX into AL
 
     ret
+
+global x86_test
+x86_test:
+    sti

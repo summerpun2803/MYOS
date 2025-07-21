@@ -1,6 +1,8 @@
 #include "hal.h"
 #include <arch/system/gdt.h>
 #include <arch/system/idt.h>
+#include <arch/system/pic.h>
+#include <arch/system/x86.h>
 
 void Hal_init()
 {

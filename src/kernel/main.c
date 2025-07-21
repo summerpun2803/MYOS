@@ -11,7 +11,6 @@ void __attribute__((section(".entry"))) start (){
     memset(&__bss_start, 0, (&__end) - (&__bss_start));
     clrscr();
     Hal_init();
-    int x = 3/0;
     printf("Kernel: Hello");
 
 end:

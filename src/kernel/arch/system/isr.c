@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 // void isr0_handler()  { printf("ISR 0: Divide by Zero\n"); }
 // void isr1_handler()  { printf("ISR 1: Debug Exception\n"); }
 // void isr2_handler()  { printf("ISR 2: Non Maskable Interrupt\n"); }
@@ -34,6 +32,7 @@
 // void isr31_handler() { printf("ISR 31: Reserved\n"); }
 
 #include <stdio.h>
+#include "pic.h"
 
 void isr0_handler()  { printf("ISR 0: Divide by Zero\n"); while (1); }
 void isr1_handler()  { printf("ISR 1: Debug Exception\n"); while (1); }
@@ -67,3 +66,12 @@ void isr28_handler() { printf("ISR 28: Hypervisor Injection Exception\n"); while
 void isr29_handler() { printf("ISR 29: VMM Communication Exception\n"); while (1); }
 void isr30_handler() { printf("ISR 30: Security Exception\n"); while (1); }
 void isr31_handler() { printf("ISR 31: Reserved\n"); while (1); }
+
+
+void timer_isr_handler() {
+    static int ticks = 0;
+    ticks++;
+    printf("Timer interrupt 100 ticks\n");
+
+    PIC_sendEOI(0);
+}
