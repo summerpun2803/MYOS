@@ -68,10 +68,8 @@ void isr30_handler() { printf("ISR 30: Security Exception\n"); while (1); }
 void isr31_handler() { printf("ISR 31: Reserved\n"); while (1); }
 
 
-void timer_isr_handler() {
-    static int ticks = 0;
-    ticks++;
-    printf("Timer interrupt 100 ticks\n");
+void __attribute((cdecl)) timer_isr_handler() {
+    printf(".");
 
     PIC_sendEOI(0);
 }

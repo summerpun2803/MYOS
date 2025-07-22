@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include "isr.h"
 
-#define IDT_SIZE    2
+#define IDT_SIZE    256
 uint8_t Interrupt_gate=0x8E;
 uint8_t Trap_gate=0x8F;
 
@@ -22,27 +22,21 @@ IDT_GATE idt[IDT_SIZE];
 IDT_Descriptor descriptor={sizeof(idt)-1, idt};
 
 void software_interupts()
-{
+{   
+    
     idt[0]  = createIDTEntry((uint32_t)&isr0,  0x08, Interrupt_gate);
     idt[1]  = createIDTEntry((uint32_t)&isr1,  0x08, Interrupt_gate);
 
 }
 
-// void hardware_inturupts()
-// {
-//     idt[32] = createIDTEntry((uint32_t)&irq0, 0x08, Interrupt_gate); // IRQ0 - Timer
-// }
-
+void hardware_interupts()
+{   
+    idt[0x20] = createIDTEntry((uint32_t)&irq0, 0x08, Interrupt_gate);
+}
 void init_idt()
 {
     software_interupts();
-    // hardware_inturupts();
-
-    // uint8_t mask = x86_inb(0x21);
-    // mask &= ~(1 << 0); // Unmask IRQ0 (Timer)
-    // mask &= ~(1 << 1); // Unmask IRQ1 (Keyboard)
-    // x86_outb(0x21, mask);
-
+    hardware_interupts();
     x86_IDT_Setup(&descriptor);
 }
 

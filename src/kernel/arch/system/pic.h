@@ -12,3 +12,6 @@ void PIC_sendEOI(uint8_t irq);
 void io_wait();
 void pic_remap(int offset1, int offset2);
 void pic_disable();
+uint16_t PIC_readISR_Request();
+uint16_t PIC_readIRR_Request();
+

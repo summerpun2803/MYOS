@@ -24,3 +24,4 @@ x86_inb:
 global x86_test
 x86_test:
     sti
+    ret

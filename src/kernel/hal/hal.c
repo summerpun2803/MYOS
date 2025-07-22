@@ -8,4 +8,6 @@ void Hal_init()
 {
     init_gdt();
     init_idt();
+    pic_remap(0x20, 0x28);
+    x86_test();
 }

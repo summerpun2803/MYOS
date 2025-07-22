@@ -63,6 +63,8 @@ global irq0
 extern timer_isr_handler
 irq0:
     cli
+    pusha
     call timer_isr_handler   ; Optional C handler
+    popa
     sti
     iret
