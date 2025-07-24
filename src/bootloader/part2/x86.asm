@@ -255,3 +255,63 @@ x86_Disk_Read:
     mov esp, ebp
     pop ebp
     ret
+
+SIGNATURE   equ 0x534D4150
+global x86_MemoryMap
+x86_MemoryMap:
+
+    ; make new call frame
+    push ebp              ; save old call frame
+    mov ebp, esp          ; initialize new call frame
+
+    x86_EnterRealMode
+
+    push ebx
+    push ecx
+    push edx
+    push esi
+    push edi
+    push es
+    push ds
+    
+    
+    LinearToSegOffset [ebp + 8], es, edx, di
+    LinearToSegOffset [ebp + 12], ds, esi, si
+
+    mov ebx, [ds:si]
+    mov edx, SIGNATURE
+    mov eax, 0xE820
+    mov ecx, 24
+    int 0x15
+    
+    jc .error
+
+    mov edx, SIGNATURE
+    cmp eax, SIGNATURE		; on success, eax must have been reset to "SMAP"
+	jne .error
+
+    .success:
+        mov eax, ecx
+        mov [ds:si], ebx
+        jmp .done
+
+    .error:
+        mov eax, -1
+
+.done:
+
+    pop ds
+    pop es
+    pop edi
+    pop esi
+    pop edx
+    pop ecx
+    pop ebx
+
+    push eax
+    x86_EnterProtectedMode
+    pop eax
+    ; restore old call frame
+    mov esp, ebp
+    pop ebp
+    ret

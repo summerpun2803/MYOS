@@ -8,12 +8,13 @@
 uint8_t *KernelLoadBufer = (uint8_t *) 0x30000;
 uint8_t *KernelAddr = (uint8_t *) 0x100000;
 
-typedef void (*KernelStart)();
+typedef void (*KernelStart)(bootparam* BootParam);
 void __attribute__((cdecl)) _cstart_ (uint16_t bootDrive){
 
     clrscr();
 
     printf("STAGE 2: Hello\n");
+    printf("BootDrive: %d\n", bootDrive);
 
     DISK disk;
 
@@ -27,7 +28,9 @@ void __attribute__((cdecl)) _cstart_ (uint16_t bootDrive){
     // Disk_Read_Sector(&disk, 0, 1, g_data);
 
     // hexdump(g_data, 512);
-
+    bootparam BootParams;
+    Memory_Detect(&BootParams.memory);
+    BootParams.BootDevice = bootDrive;  
 
     if(!FAT_Initialize(&disk)){
         printf("FAT: Initialization Error\n");
@@ -44,9 +47,8 @@ void __attribute__((cdecl)) _cstart_ (uint16_t bootDrive){
     }
     FAT_Close(fd);
     printf("STAGE 2: Moving to Kernel");
-
     KernelStart kernelStart = (KernelStart) Kernel;
-    kernelStart();
+    kernelStart(&BootParams);
 
 end:
     for (;;);

@@ -1,5 +1,6 @@
 TARGET_ASMFLAGS += -f elf
-TARGET_CFLAGS += -ffreestanding -nostdlib -I.
+PROJECT_ROOT = /home/samar/Desktop/Project/osdev2
+TARGET_CFLAGS += -ffreestanding -nostdlib -I. -I$(PROJECT_ROOT)/src/lib
 TARGET_LIBS += -lgcc
 TARGET_LINKFLAGS += -T linker.ld -nostdlib
 
