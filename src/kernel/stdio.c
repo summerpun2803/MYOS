@@ -163,6 +163,10 @@ void printf(const char *fmt, ...) {
                         print_number(va_arg(args, int));
                         break;
                     
+                    case 'l':
+                        print_number(va_arg(args, long long));
+                        break;
+                    
                     default:    break;
                 }
 
@@ -195,6 +199,31 @@ void print_number(int num){
     }
     while(i--) putc(buffer[i]);
 }
+
+void print_longlong(long long num) {
+    char buffer[21]; 
+    int i = 0;
+
+    if (num == 0) {
+        putc('0');
+        return;
+    }
+
+    if (num < 0) {
+        putc('-');
+        num = -num;
+    }
+
+    while (num > 0) {
+        buffer[i++] = '0' + (num % 10);
+        num /= 10;
+    }
+
+    while (i--) {
+        putc(buffer[i]);
+    }
+}
+
 
 void hexdump(const uint8_t* data, uint32_t length) {
     for (uint32_t i = 0; i < length; i++) {

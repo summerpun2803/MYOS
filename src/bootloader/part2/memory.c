@@ -41,17 +41,18 @@ void Memory_Detect(MemoryInfo* memoryInfo)
     uint32_t cont_id = 0;
     uint32_t cnt = 0;
     int ret = x86_MemoryMap(&block, &cont_id);
-    while(ret > 0 & cont_id != 0){
+    while(ret > 0 && cont_id != 0){
         G_memory_info[cnt].Base = block.Base;
         G_memory_info[cnt].Length = block.Length;
         G_memory_info[cnt].Type = block.Type;
         G_memory_info[cnt].ACPI = block.ACPI;
-        printf("Base: %d Len: %d ACPI: %d Type: %d\n", block.Base, block.Length, block.ACPI, block.Type);
+        printf("Base: %l Len: %l ACPI: %l Type: %d\n", block.Base, block.Length, block.ACPI, block.Type);
 
         cnt++;
         ret = x86_MemoryMap(&block, &cont_id);
         
     }
+    // for(;;)
     memoryInfo->Region = G_memory_info;
     memoryInfo->RegionCount = cnt;
 }

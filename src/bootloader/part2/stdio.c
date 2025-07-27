@@ -118,6 +118,31 @@ void setcursor(int x, int y){
 	x86_outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 }
 
+
+void print_longlong(long long num) {
+    char buffer[21]; 
+    int i = 0;
+
+    if (num == 0) {
+        putc('0');
+        return;
+    }
+
+    if (num < 0) {
+        putc('-');
+        num = -num;
+    }
+
+    while (num > 0) {
+        buffer[i++] = '0' + (num % 10);
+        num /= 10;
+    }
+
+    while (i--) {
+        putc(buffer[i]);
+    }
+}
+
 #define PRINTF_STATE_NORMAL         0
 #define PRINTF_STATE_LENGTH         1
 #define PRINTF_STATE_SPEC           2
@@ -161,6 +186,10 @@ void printf(const char *fmt, ...) {
                     
                     case 'd':
                         print_number(va_arg(args, int));
+                        break;
+
+                    case 'l':
+                        print_number(va_arg(args, long long));
                         break;
                     
                     default:    break;

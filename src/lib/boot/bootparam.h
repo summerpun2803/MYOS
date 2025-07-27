@@ -6,7 +6,7 @@ typedef struct
 {
     uint64_t Base, Length;
     uint32_t Type, ACPI;
-} MemoryMap;
+} __attribute__((packed)) MemoryMap;
 
 typedef struct
 {

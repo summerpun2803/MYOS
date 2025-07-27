@@ -282,11 +282,11 @@ x86_MemoryMap:
     mov edx, SIGNATURE
     mov eax, 0xE820
     mov ecx, 24
+    mov dword [es:di + 20], 1
     int 0x15
     
     jc .error
 
-    mov edx, SIGNATURE
     cmp eax, SIGNATURE		; on success, eax must have been reset to "SMAP"
 	jne .error
 
@@ -315,3 +315,4 @@ x86_MemoryMap:
     mov esp, ebp
     pop ebp
     ret
+
