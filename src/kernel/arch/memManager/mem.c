@@ -40,18 +40,18 @@ void BitMap_Init(MemoryInfo* meminfo){
     uint64_t U_base = meminfo->Region[0].Base;
     uint64_t U_length = meminfo->Region[0].Length;
 
-    // for(int i=0; i<meminfo->RegionCount; i++){
-    //     if(meminfo->Region[i].Length > U_length && meminfo->Region[i].Type == 1){
-    //         U_base = meminfo->Region[i].Base;
-    //         U_length = meminfo->Region[i].Length;
-    //     }
-    // }
+    for(int i=0; i<meminfo->RegionCount; i++){
+        if(meminfo->Region[i].Length > U_length && meminfo->Region[i].Type == 1){
+            U_base = meminfo->Region[i].Base;
+            U_length = meminfo->Region[i].Length;
+        }
+    }
 
     memory_base = U_base;
-    total_pages = U_length / PAGE_SIZE;
+    total_pages =( U_length - 0x100000)/ PAGE_SIZE;
     bitmap_size_in_bytes = (total_pages + 7) / 8;
 
-    bitmap = (uint32_t *)( memory_base );
+    bitmap = (uint32_t *)( memory_base  + 0x100000);
     bitmap_deallocate(0, bitmap_size_in_bytes);
     // printf("DEBUG: Small memset completed\n");
     uint32_t bitmap_metadata = (bitmap_size_in_bytes + PAGE_SIZE - 1) / PAGE_SIZE;
