@@ -143,6 +143,26 @@ void print_longlong(long long num) {
     }
 }
 
+void print_longlong_hex(unsigned long long num) {
+    char buffer[17];  // Max 16 hex digits for 64-bit + '\0'
+    int i = 0;
+
+    if (num == 0) {
+        putc('0');
+        return;
+    }
+
+    while (num > 0) {
+        uint8_t nibble = num & 0xF;
+        buffer[i++] = (nibble < 10) ? ('0' + nibble) : ('a' + nibble - 10);
+        num >>= 4;
+    }
+
+    while (i--) {
+        putc(buffer[i]);
+    }
+}
+
 #define PRINTF_STATE_NORMAL         0
 #define PRINTF_STATE_LENGTH         1
 #define PRINTF_STATE_SPEC           2
@@ -191,6 +211,8 @@ void printf(const char *fmt, ...) {
                     case 'l':
                         print_number(va_arg(args, long long));
                         break;
+                    case 'x':
+                        print_longlong_hex(va_arg(args, unsigned long long));
                     
                     default:    break;
                 }

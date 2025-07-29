@@ -275,14 +275,14 @@ x86_MemoryMap:
     push ds
     
     
-    LinearToSegOffset [ebp + 8], es, edx, di
-    LinearToSegOffset [ebp + 12], ds, esi, si
+    LinearToSegOffset [bp + 8], es, edi, di
+    LinearToSegOffset [bp + 12], ds, esi, si
 
     mov ebx, [ds:si]
     mov edx, SIGNATURE
     mov eax, 0xE820
-    mov ecx, 24
-    mov dword [es:di + 20], 1
+    mov ecx, 20
+
     int 0x15
     
     jc .error

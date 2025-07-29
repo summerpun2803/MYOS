@@ -26,9 +26,8 @@ typedef struct {
     uint64_t Base;
     uint64_t Length;
     uint32_t Type;
-    uint32_t ACPI;
 
-} MemBlock;
+} __attribute__((packed)) MemBlock;
 
 uint32_t __attribute__((cdecl)) x86_MemoryMap(  MemBlock* buffer24Bytes, 
                                                 uint32_t* continuationEbxbuff);                                            

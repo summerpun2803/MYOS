@@ -22,12 +22,12 @@ int memcmp(const void* ptr1, const void* ptr2, uint16_t num)
     return 0;
 }
 
-void* memset( void* ptr1, int c, uint16_t num){
+void* memset(void* ptr1, int c, uint32_t num) {
     uint8_t* U8ptr1 = (uint8_t*)ptr1;
-
-    for(uint16_t i=0; i<num; i++){
-        U8ptr1[i] = (uint8_t) c;
+    uint8_t value = (uint8_t)c;  // Cast once outside the loop
+    
+    for(uint32_t i = 0; i < num; i++) {
+        U8ptr1[i] = value;
     }
-
-    return  ptr1;
+    return ptr1;
 }
