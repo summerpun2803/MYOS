@@ -42,14 +42,14 @@ void* alloc_block(){
 
     bitmap_set(temp);
 
-    uint32_t * addr = temp * PAGE_SIZE;
+    void* addr = (void*)(memory_base + (uint64_t)temp * PAGE_SIZE);
     // printf("allocating : %d\n", temp);
-    return (void *)addr;
+    return addr;
 }
 
 void dealloc_block(void* addr){
 
-    int temp = (uint32_t)addr / PAGE_SIZE;    
+    int temp = ((uint64_t)addr - memory_base) / PAGE_SIZE;
     // printf("deallocating : %d\n", temp);
     bitmap_clear(temp);
 }

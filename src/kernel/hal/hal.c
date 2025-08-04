@@ -3,6 +3,7 @@
 #include <arch/system/idt.h>
 #include <arch/system/pic.h>
 #include <arch/system/x86.h>
+#include <arch/memManager/vmm.h>
 
 void Hal_init()
 {
