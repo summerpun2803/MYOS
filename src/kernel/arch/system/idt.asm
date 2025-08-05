@@ -68,3 +68,9 @@ irq0:
     popa
     sti
     iret
+
+global read_cr2
+read_cr2:
+    mov eax, cr2
+    ret
+

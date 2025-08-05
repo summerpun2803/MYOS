@@ -27,4 +27,4 @@ extern bool		pd_entry_is_user (pd_entry e);
 extern bool		pd_entry_is_4mb (pd_entry e);
 extern bool		pd_entry_is_writable (pd_entry e);
 extern uint32_t	pd_entry_pfn (pd_entry e);
-extern void		pd_entry_enable_global (pd_entry e);
+extern void		pd_entry_enable_global (pd_entry *e);

@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 typedef uint32_t pt_entry;
+
 enum PAGE_PTE_FLAGS {
  
 	I86_PTE_PRESENT			    =	1,		    //0000000000000000000000000000001

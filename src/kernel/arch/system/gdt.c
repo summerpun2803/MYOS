@@ -38,6 +38,6 @@ void init_gdt()
         sizeof(GDT_entry) - 1, 
         GDT_entry
     };
-
+    // printf("GDT at: %l", &g_GDTDescriptor);
     x86_GDT_Setup(&g_GDTDescriptor, 0x08, 0x10); // selector 1 and 2
 }

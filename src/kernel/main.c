@@ -12,6 +12,7 @@ void __attribute__((section(".entry"))) start (bootparam* params){
 
     memset(&__bss_start, 0, (&__end) - (&__bss_start));
     clrscr();
+    BitMap_Init(&params->memory);
     Hal_init();
     printf("Kernel: Hello\n");
     printf("BootDevice: %d \n", params->BootDevice);
@@ -23,7 +24,6 @@ void __attribute__((section(".entry"))) start (bootparam* params){
                                                 params->memory.Region[i].Length,
                                                 params->memory.Region[i].Type);
     }
-    BitMap_Init(&params->memory);
 
 end:
     for(;;);

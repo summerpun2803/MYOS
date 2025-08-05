@@ -33,6 +33,8 @@
 
 #include <stdio.h>
 #include "pic.h"
+#include "x86.h"
+extern uint32_t read_cr2();
 
 void isr0_handler()  { printf("ISR 0: Divide by Zero\n"); while (1); }
 void isr1_handler()  { printf("ISR 1: Debug Exception\n"); while (1); }
@@ -47,8 +49,19 @@ void isr9_handler()  { printf("ISR 9: Coprocessor Segment Overrun\n"); while (1)
 void isr10_handler() { printf("ISR 10: Invalid TSS\n"); while (1); }
 void isr11_handler() { printf("ISR 11: Segment Not Present\n"); while (1); }
 void isr12_handler() { printf("ISR 12: Stack Segment Fault\n"); while (1); }
-void isr13_handler() { printf("ISR 13: General Protection Fault\n"); while (1); }
-void isr14_handler() { printf("ISR 14: Page Fault\n"); while (1); }
+void isr13_handler() { 
+    printf("ISR 13: General Protection Fault\n"); 
+    panic();
+    while (1); 
+    panic();
+}
+void isr14_handler() { 
+
+    printf("PAGE FAULT");
+    panic();
+    while (1); 
+    panic();
+}
 void isr15_handler() { printf("ISR 15: Reserved\n"); while (1); }
 void isr16_handler() { printf("ISR 16: x87 Floating-Point Exception\n"); while (1); }
 void isr17_handler() { printf("ISR 17: Alignment Check\n"); while (1); }

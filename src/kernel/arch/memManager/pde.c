@@ -32,7 +32,7 @@ uint32_t pd_entry_pfn (pd_entry e)
 {
     return e & I86_PDE_FRAME; 
 }
-void pd_entry_enable_global (pd_entry e)
+void pd_entry_enable_global (pd_entry *e)
 {
     *e |= I86_PDE_CPU_GLOBAL;
     *e |= I86_PDE_LV4_GLOBAL;

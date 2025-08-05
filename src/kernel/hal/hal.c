@@ -11,4 +11,5 @@ void Hal_init()
     init_idt();
     pic_remap(0x20, 0x28);
     // x86_test();  
+    vmmngr_initialize();
 }

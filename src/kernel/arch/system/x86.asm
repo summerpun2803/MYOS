@@ -25,3 +25,8 @@ global x86_test
 x86_test:
     sti
     ret
+
+global panic
+panic:
+    cli 
+    hlt

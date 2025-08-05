@@ -26,6 +26,9 @@ void software_interupts()
     
     idt[0]  = createIDTEntry((uint32_t)&isr0,  0x08, Interrupt_gate);
     idt[1]  = createIDTEntry((uint32_t)&isr1,  0x08, Interrupt_gate);
+    idt[8]  = createIDTEntry((uint32_t)&isr8,  0x08, Interrupt_gate);
+    idt[13] = createIDTEntry((uint32_t)&isr13, 0x08, Interrupt_gate);  // General Protection Fault
+    idt[14] = createIDTEntry((uint32_t)&isr14, 0x08, Interrupt_gate);  // Page Fault
 
 }
 
