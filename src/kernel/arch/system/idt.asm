@@ -59,18 +59,45 @@ ISR_NOERR 30
 ISR_NOERR 31
 
 
-global irq0
-extern timer_isr_handler
-irq0:
-    cli
-    pusha
-    call timer_isr_handler   ; Optional C handler
-    popa
-    sti
-    iret
+; global irq0
+; extern timer_isr_handler
+; irq0:
+;     cli
+;     pusha
+;     call timer_isr_handler   ; Optional C handler
+;     popa
+;     sti
+;     iret
 
 global read_cr2
 read_cr2:
     mov eax, cr2
     ret
 
+%macro IRQ 2
+global irq%1
+irq%1:
+    cli
+    pushad
+    push 0    
+    push %1     
+    jmp irq_common_stub
+%endmacro
+
+IRQ 0, 32
+IRQ 1, 33
+IRQ 2, 34
+IRQ 3, 35
+IRQ 4, 36
+IRQ 5, 37
+IRQ 6, 38 
+IRQ 7, 39
+
+irq_common_stub:
+
+    extern irq_handler ; The C handler
+    call irq_handler
+    add esp, 8
+    popad
+    sti
+    iret

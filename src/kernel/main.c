@@ -14,16 +14,16 @@ void __attribute__((section(".entry"))) start (bootparam* params){
     clrscr();
     BitMap_Init(&params->memory);
     Hal_init();
-    printf("Kernel: Hello\n");
+    printf("[Kernel] : Hello\n");
     printf("BootDevice: %d \n", params->BootDevice);
     printf("Memory Entries: %d \n", params->memory.RegionCount);
     
 
-    for(int i=0; i<params->memory.RegionCount; i++){
-        printf("Base: %l Len: %l Type: %l\n",   params->memory.Region[i].Base,
-                                                params->memory.Region[i].Length,
-                                                params->memory.Region[i].Type);
-    }
+    // for(int i=0; i<params->memory.RegionCount; i++){
+    //     printf("Base: %l Len: %l Type: %l\n",   params->memory.Region[i].Base,
+    //                                             params->memory.Region[i].Length,
+    //                                             params->memory.Region[i].Type);
+    // }
 
 end:
     for(;;);

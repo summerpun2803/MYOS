@@ -112,12 +112,13 @@ void vmmngr_initialize()
     pd_entry_set_frame(entry1, (uint32_t)first_table);
     pd_entry_add_attrib(entry1, I86_PDE_PRESENT | I86_PDE_WRITABLE);
 
-    pd_entry* recursive_entry = &global_dir->entries[1023];
-    pd_entry_set_frame(recursive_entry, (uint32_t)global_dir);
-    pd_entry_add_attrib(recursive_entry, I86_PDE_PRESENT | I86_PDE_WRITABLE);
+    // pd_entry* recursive_entry = &global_dir->entries[1023];
+    // pd_entry_set_frame(recursive_entry, (uint32_t)global_dir);
+    // pd_entry_add_attrib(recursive_entry, I86_PDE_PRESENT | I86_PDE_WRITABLE);
     
 
     switch_page_directory(global_dir);
     enablePaging();
+    printf("[VMM] : Initialized\n");
 }
 

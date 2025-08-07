@@ -34,4 +34,5 @@ void __attribute((cdecl)) isr30();
 void __attribute((cdecl)) isr31();
 
 void __attribute((cdecl)) irq0();
+void __attribute((cdecl)) irq6();
 void __attribute((cdecl)) timer_isr_handler();

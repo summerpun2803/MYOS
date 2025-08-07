@@ -51,14 +51,12 @@ void isr11_handler() { printf("ISR 11: Segment Not Present\n"); while (1); }
 void isr12_handler() { printf("ISR 12: Stack Segment Fault\n"); while (1); }
 void isr13_handler() { 
     printf("ISR 13: General Protection Fault\n"); 
-    panic();
     while (1); 
     panic();
 }
 void isr14_handler() { 
 
     printf("PAGE FAULT");
-    panic();
     while (1); 
     panic();
 }

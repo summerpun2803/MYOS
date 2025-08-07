@@ -5,6 +5,7 @@
 #define IDT_SIZE    256
 uint8_t Interrupt_gate=0x8E;
 uint8_t Trap_gate=0x8F;
+volatile bool g_fdc_irq_happened = false;
 
 IDT_GATE createIDTEntry(uint32_t Offset, uint16_t Segement_Selector, uint8_t Type){
 
@@ -21,6 +22,19 @@ IDT_GATE createIDTEntry(uint32_t Offset, uint16_t Segement_Selector, uint8_t Typ
 IDT_GATE idt[IDT_SIZE];
 IDT_Descriptor descriptor={sizeof(idt)-1, idt};
 
+void irq_handler(uint32_t int_no, uint32_t dummy)
+{
+    if (int_no == 0){
+        printf(".");
+
+    }else if(int_no == 6){
+        g_fdc_irq_happened = true;
+    }
+
+
+    PIC_sendEOI(int_no);
+}
+
 void software_interupts()
 {   
     
@@ -35,6 +49,7 @@ void software_interupts()
 void hardware_interupts()
 {   
     idt[0x20] = createIDTEntry((uint32_t)&irq0, 0x08, Interrupt_gate);
+    idt[38] = createIDTEntry((uint32_t)&irq6, 0x08, Interrupt_gate);
 }
 void init_idt()
 {

@@ -1,4 +1,5 @@
 #include "stdint.h"
+#include "stdbool.h"
 
 typedef struct 
 {
@@ -20,6 +21,7 @@ typedef struct
 
 extern uint8_t Interrupt_gate;
 extern uint8_t Trap_gate;
+extern volatile bool g_fdc_irq_happened;
 
 IDT_GATE createIDTEntry(uint32_t Offset, uint16_t Segement_Selector, uint8_t Type);
 void __attribute__((cdecl)) x86_IDT_Setup(IDT_Descriptor *descriptor);
