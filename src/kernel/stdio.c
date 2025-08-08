@@ -167,6 +167,10 @@ void printf(const char *fmt, ...) {
                         print_number(va_arg(args, long long));
                         break;
                     
+                    case 'x':
+                        print_hex(va_arg(args, uint32_t));
+                        break;
+                    
                     default:    break;
                 }
 
@@ -225,16 +229,25 @@ void print_longlong(long long num) {
 }
 
 
-void hexdump(const uint8_t* data, uint32_t length) {
-    for (uint32_t i = 0; i < length; i++) {
-        // Print one byte in hex
-        uint8_t byte = data[i];
-        char hex[] = "0123456789ABCDEF";
-        putc(hex[(byte >> 4) & 0xF]);
-        putc(hex[byte & 0xF]);
+// Add this function to your printf file
+void print_hex(uint32_t num) {
+    char hex_chars[] = "0123456789abcdef";
+    char buffer[9]; // 8 hex digits + null terminator
+    int i = 8;
 
-        // Add space
-        putc(' ');
+    buffer[i] = '\0'; // Null terminate
+
+    if (num == 0) {
+        putc('0');
+        return;
     }
-    puts("\n");
+    
+    while (num > 0) {
+        i--;
+        buffer[i] = hex_chars[num % 16];
+        num /= 16;
+    }
+
+    // Now print the resulting string from the buffer
+    puts(&buffer[i]);
 }

@@ -28,3 +28,5 @@ void vmmngr_initialize();
 void __attribute__((cdecl)) enablePaging();
 void __attribute__((cdecl)) loadPageDirectory(uint32_t physical_addr);
 void __attribute__((cdecl)) flush_tlb_entry(uint32_t vitual_addr);
+void trigger_page_fault();
+void fault_handler(void* virt);

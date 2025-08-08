@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include "pic.h"
 #include "x86.h"
+#include "arch/memManager/vmm.h"
 extern uint32_t read_cr2();
 
 void isr0_handler()  { printf("ISR 0: Divide by Zero\n"); while (1); }
@@ -55,10 +56,10 @@ void isr13_handler() {
     panic();
 }
 void isr14_handler() { 
-
-    printf("PAGE FAULT");
-    while (1); 
-    panic();
+    int32_t fault_addr = read_cr2();
+    uint32_t page_aligned = fault_addr & 0xFFFFF000;
+    printf("Page fault at address: 0x%x\n", page_aligned);
+    fault_handler((void *)page_aligned);
 }
 void isr15_handler() { printf("ISR 15: Reserved\n"); while (1); }
 void isr16_handler() { printf("ISR 16: x87 Floating-Point Exception\n"); while (1); }

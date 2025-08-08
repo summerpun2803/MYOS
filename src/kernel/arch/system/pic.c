@@ -44,6 +44,7 @@ void pic_remap(int offset1, int offset2)
 	x86_outb(PIC2_DATA_PORT, 0);
     io_wait();
 
+    // mask_irq(0);
 }
 
 void mask_irq(uint8_t IRQline)

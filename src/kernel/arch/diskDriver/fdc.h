@@ -20,3 +20,11 @@ enum floppy_registers {
    FLOPPY_CCR  = 7   
 };
 
+enum FLOPPY_INIT_CMDS {
+    MASK        =   0x06,
+    UNMASK      =   0x02,
+    FLIP_FLOP   =   0xFF,
+    READ_MODE   =   0x56,
+    WRITE_MODE  =   0x5A
+};
+

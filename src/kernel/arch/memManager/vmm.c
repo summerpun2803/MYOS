@@ -25,7 +25,7 @@ void vmmngr_free_page (pt_entry* e)
     return true;
 }
 
-static pt_entry* get_ptable_entry(ptable *pt, uint32_t v_addr)
+static inline pt_entry* get_ptable_entry(ptable *pt, uint32_t v_addr)
 {
     return &pt->entries[PAGE_TABLE_INDEX(v_addr)];
 }
@@ -77,31 +77,43 @@ void vmmngr_map_page (void* phys, void* virt)
     pt_entry_add_attrib(page, I86_PTE_PRESENT | I86_PTE_WRITABLE);
 
 }
-
+void fault_handler(void* virt){
+    printf("in the handlier \n");
+    void* phys = alloc_block();
+    if (!phys) {
+        printf("No physical memory!\n");
+        while(1);
+    }
+    vmmngr_map_page(phys, virt);
+}
+static inline set_page(ptable* table, uint32_t v_addr, pt_entry *page)
+{
+    table->entries[PAGE_TABLE_INDEX(v_addr)] = *page;
+}
 void vmmngr_initialize() 
 {   
     ptable* first_table = (ptable *) alloc_block();
-    memset(first_table, 0, PAGE_SIZE*4);
+    memset(first_table, 0, PAGE_SIZE);
 
     ptable* second_table = (ptable *) alloc_block();
-    memset(second_table, 0, PAGE_SIZE*4);
+    memset(second_table, 0, PAGE_SIZE);
 
     for(int i=0, p=0x0, v=0x00000000; i<1024; i++, p += PAGE_SIZE, v+= PAGE_SIZE){
         pt_entry page = 0;
         pt_entry_add_attrib(&page, I86_PTE_PRESENT);
         pt_entry_set_frame(&page, (uint32_t) p);
-        first_table->entries[PAGE_TABLE_INDEX(v)] = page;
+        set_page(first_table, v, &page);
     }
 
     for (int i=0, frame=0x100000, virt=0xC0000000; i<1024; i++, frame+=4096, virt+=4096) {
         pt_entry page = 0;
         pt_entry_add_attrib(&page, I86_PTE_PRESENT | I86_PTE_WRITABLE);
         pt_entry_set_frame(&page, frame);
-        second_table->entries[PAGE_TABLE_INDEX(virt)] = page;
+        set_page(second_table, virt, &page);
     }
 
-    pdirectory* global_dir = (pdirectory*) alloc_block();
-    memset(global_dir, 0, 1024*4);
+    global_dir = (pdirectory*) alloc_block();
+    memset(global_dir, 0, 1024);
 
     pd_entry* entry2 = &global_dir->entries[PAGE_DIR_INDEX(0xC0000000)];
     pd_entry_set_frame(entry2, (uint32_t)second_table);
@@ -120,5 +132,18 @@ void vmmngr_initialize()
     switch_page_directory(global_dir);
     enablePaging();
     printf("[VMM] : Initialized\n");
+}
+void trigger_page_fault() {
+    printf("Attempting to write to unmapped address 0x500000...\n");
+
+    // Your vmmngr_initialize() only mapped 0x0-0x400000 and 0xC0000000+.
+    // Therefore, the address 0x500000 is guaranteed to be unmapped.
+    uint32_t* ptr = (uint32_t*)0x500000;
+
+    // This is the instruction that will cause the fault.
+    *ptr = 0xDEADBEEF;
+
+    // This line should NEVER be reached.
+    printf("Error: Page fault was not caught!\n");
 }
 
