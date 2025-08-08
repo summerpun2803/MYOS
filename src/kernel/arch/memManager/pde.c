@@ -10,7 +10,7 @@ void pd_entry_del_attrib (pd_entry* e, uint32_t attrib)
 }
 void pd_entry_set_frame (pd_entry* e, uint32_t addr)
 {
-    *e = (*e & ~(I86_PDE_FRAME)) | (addr & I86_PDE_FRAME);
+    *e = (*e & ~(I86_PDE_FRAME)) | (addr );
 }
 bool pd_entry_is_present (pd_entry e)
 {
@@ -19,10 +19,6 @@ bool pd_entry_is_present (pd_entry e)
 bool pd_entry_is_user (pd_entry e)
 {
     return (e & I86_PDE_USER) != 0;
-}
-bool pd_entry_is_4mb (pd_entry e)
-{
-    return (e & I86_PDE_4MB) != 0;
 }
 bool pd_entry_is_writable (pd_entry e)
 {               
@@ -35,5 +31,4 @@ uint32_t pd_entry_pfn (pd_entry e)
 void pd_entry_enable_global (pd_entry *e)
 {
     *e |= I86_PDE_CPU_GLOBAL;
-    *e |= I86_PDE_LV4_GLOBAL;
 }

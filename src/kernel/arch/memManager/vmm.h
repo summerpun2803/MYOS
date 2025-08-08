@@ -2,9 +2,9 @@
 #include "pte.h"
 #include "pde.h"
 
-#define PAGE_DIR_INDEX(x) ((x >> 22) & 0x3ff)
+#define PAGE_DIR_INDEX(x) ((x >> 22))
 #define PAGE_TABLE_INDEX(x) ((x >> 12) & 0x3ff)
-#define OFFSET(x) ((x) & ~0xfff)
+#define PAGE_GET_PHYSICAL_ADDRESS(x) ((*x) & ~0xfff)
 
 #define PAGE_PER_TABLE 1024
 #define TABLE_PER_DIR  1024
@@ -29,4 +29,4 @@ void __attribute__((cdecl)) enablePaging();
 void __attribute__((cdecl)) loadPageDirectory(uint32_t physical_addr);
 void __attribute__((cdecl)) flush_tlb_entry(uint32_t vitual_addr);
 void trigger_page_fault();
-void fault_handler(void* virt);
+bool fault_handler(void* virt);

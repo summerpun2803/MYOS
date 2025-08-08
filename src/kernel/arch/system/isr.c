@@ -35,7 +35,9 @@
 #include "pic.h"
 #include "x86.h"
 #include "arch/memManager/vmm.h"
-extern uint32_t read_cr2();
+#include "isr.h"
+
+extern uint32_t read_cr2(void);
 
 void isr0_handler()  { printf("ISR 0: Divide by Zero\n"); while (1); }
 void isr1_handler()  { printf("ISR 1: Debug Exception\n"); while (1); }
@@ -50,16 +52,18 @@ void isr9_handler()  { printf("ISR 9: Coprocessor Segment Overrun\n"); while (1)
 void isr10_handler() { printf("ISR 10: Invalid TSS\n"); while (1); }
 void isr11_handler() { printf("ISR 11: Segment Not Present\n"); while (1); }
 void isr12_handler() { printf("ISR 12: Stack Segment Fault\n"); while (1); }
-void isr13_handler() { 
+void isr13_handler(regs_t *r) { 
     printf("ISR 13: General Protection Fault\n"); 
     while (1); 
     panic();
 }
-void isr14_handler() { 
+void isr14_handler(regs_t *r) { 
     int32_t fault_addr = read_cr2();
     uint32_t page_aligned = fault_addr & 0xFFFFF000;
-    printf("Page fault at address: 0x%x\n", page_aligned);
+    printf("Page fault at 0x%x (err=0x%x)\n", page_aligned, r->err_code);
+    printf("int: %d\n", r->int_no);
     fault_handler((void *)page_aligned);
+    while(1);
 }
 void isr15_handler() { printf("ISR 15: Reserved\n"); while (1); }
 void isr16_handler() { printf("ISR 16: x87 Floating-Point Exception\n"); while (1); }

@@ -17,15 +17,17 @@ loadPageDirectory:
 enablePaging:
     ; This function takes no arguments, so no stack frame needed.
     mov eax, cr0
-    or eax, 0x80000000 ; Set only the Paging (PG) bit
+    or eax, 0x80000001 ; Set only the Paging (PG) bit
     mov cr0, eax
     ret
 
 ; Flushes a single page from the TLB cache
-flush_tlb_entry:
+flush_tlb_entry:    
+    cli
     push ebp
     mov ebp, esp
     mov eax, [ebp + 8]  ; Get virtual address from stack
     invlpg [eax]
     pop ebp
+    sti
     ret

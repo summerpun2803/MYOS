@@ -5,9 +5,31 @@ global isr%1
 extern isr%1_handler
 isr%1:
     cli
-    pusha
+    push dword 0        ; fake error code for uniformity
+    push dword %1       ; push interrupt/vector number
+    pushad
+    push esp            ; pass pointer to regs (optional)
     call isr%1_handler
-    popa
+    add esp, 4          ; remove pushed esp argument
+    popad
+    add esp, 8          ; remove int_no + fake_err pushed earlier
+    sti
+    iret
+%endmacro
+
+%macro ISR_ERR 1
+global isr%1
+extern isr%1_handler
+isr%1:
+    cli
+    push dword %1       ; push interrupt/vector number
+    ; NOTE: CPU already pushed the real error code BEFORE ISR entry
+    pushad
+    push esp            ; pass pointer to regs (optional)
+    call isr%1_handler
+    add esp, 4
+    popad
+    add esp, 4          ; remove pushed int_no (error code remains where CPU put it, but our handler reads it from regs)
     sti
     iret
 %endmacro
@@ -33,13 +55,13 @@ ISR_NOERR 4
 ISR_NOERR 5
 ISR_NOERR 6
 ISR_NOERR 7
-ISR_NOERR 8
+ISR_ERR 8
 ISR_NOERR 9
 ISR_NOERR 10
 ISR_NOERR 11
 ISR_NOERR 12
-ISR_NOERR 13
-ISR_NOERR 14
+ISR_ERR 13
+ISR_ERR 14
 ISR_NOERR 15
 ISR_NOERR 16
 ISR_NOERR 17

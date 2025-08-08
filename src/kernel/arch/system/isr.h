@@ -1,5 +1,25 @@
 #pragma once
 
+typedef struct regs {
+    /* pushad order: EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI */
+    uint32_t eax;
+    uint32_t ecx;
+    uint32_t edx;
+    uint32_t ebx;
+    uint32_t esp;
+    uint32_t ebp;
+    uint32_t esi;
+    uint32_t edi;
+
+    uint32_t int_no;     /* pushed by stub */
+    uint32_t err_code;   /* real CPU error code or fake 0 (for NOERR) */
+
+    /* CPU pushed frame */
+    uint32_t eip;
+    uint32_t cs;
+    uint32_t eflags;
+} regs_t;
+
 void __attribute((cdecl)) isr0();
 void __attribute((cdecl)) isr1();
 void __attribute((cdecl)) isr2();
