@@ -1,44 +1,133 @@
 #include "fdc.h"
-#include "arch/system/idt.h"
 #include "arch/system/x86.h"
+#include "arch/system/idt.h"
+#include "utils.h"
+#include "stdio.h"
 
-static void fdc_wait_irq() {
-    while (!g_fdc_irq_happened); 
-    g_fdc_irq_happened = false;
+void flpydsk_disable_controller () {
+ 
+	x86_outb (DIGITAL_OUTPUT_REGISTER, 0);
 }
 
-void FDC_Init_Floppy()
+void flpydsk_enable_controller () {
+ 
+	x86_outb (DIGITAL_OUTPUT_REGISTER, FLPYDSK_DOR_MASK_DMA | FLPYDSK_DOR_MASK_RESET);
+}
+
+int FDC_recalibrate(uint8_t drive)
 {
-    x86_outb( 0x0a, MASK); 
+    uint32_t st0, cyl;
+    uint32_t timeout = 10;
+    while(timeout--){
+        uint8_t ok = 1;
+        ok &= fdc_write(FDC_CMD_CALIBRATE);
+        ok &= fdc_write(drive);
 
-    // Reset the master flip-flop
-    x86_outb( 0x0c, FLIP_FLOP);  
+        wait_IRQ();
+        flpydsk_check_int(&st0, &cyl);
+        if(cyl == 0 && ok) return 1;
+    }   
+    printf("[FDC]: Recalbration Timeout");
+    return 0;
+}
 
-    // Set the address for the transfer to 0x1000  
-    x86_outb( 0x04, 0   );      
-    x86_outb( 0x04, 0x10);      
+void FDA_Init()
+{   
+    flpydsk_disable_controller();
+    delay_ms(100);
 
-    x86_outb( 0x0c, FLIP_FLOP);  
+    flpydsk_enable_controller();
+    delay_ms(100);
 
-    x86_outb( 0x05, 0xFF);      
-    x86_outb( 0x05, 0x23);      
+    
+    wait_IRQ();
+    
+    uint32_t st0, cyl;
+    for(int i=0; i<4; i++)
+        flpydsk_check_int(&st0, &cyl);
+    
+    fdc_specify(0xDF, 0x02);
 
-    x86_outb( 0x81, 0   );      
-    x86_outb( 0x0a, UNMASK);      
+    start_motor(0);
+    delay_ms(100);
+
+    FDC_recalibrate(0);
+    printf("\nhere\n");
 
 }
 
-void FDC_Write_prep()
+void DMA_Init()
 {
-    x86_outb (0x0a, MASK); 
-    x86_outb (0x0b, WRITE_MODE); 
-    x86_outb (0x0a, UNMASK); 
+    x86_outb (0x0a, 0x06);  // mask DMA channel 2 and 0 (assuming 0 is already masked)
+    x86_outb (0x0c, 0xFF);  // reset the master flip-flop
+    x86_outb (0x04, 0   );  // address to 0 (low byte)
+    x86_outb (0x04, 0x10);  // address to 0x10 (high byte)
+    x86_outb (0x0c, 0xFF);  // reset the master flip-flop (again!!!)
+    x86_outb (0x05, 0xFF);  // count to 0x23ff (low byte)
+    x86_outb (0x05, 0x23);  // count to 0x23ff (high byte),
+    x86_outb (0x81, 0   );  // external page register to 0 for total address of 00 10 00
+    x86_outb (0x0a, 0x02);  // unmask DMA channel 2
 }
 
-void FDC_Read_Prep()
-{
-    x86_outb (0x0a, MASK); 
-    x86_outb (0x0b, READ_MODE); 
-    x86_outb (0x0a, UNMASK); 
 
+void prepare_DMA_write()
+{
+    x86_outb (0x0a, 0x06);  //mask DMA channel 2 and 0 (assuming 0 is already masked)
+    x86_outb (0x0b, 0x5A);  //01011010     
+    x86_outb (0x0a, 0x02);  //unmask DMA channel 2
+}
+
+void prepare_DMA_read()
+{
+    x86_outb (0x0a, 0x06);  //mask DMA channel 2 and 0 (assuming 0 is already masked)
+    x86_outb (0x0b, 0x56);  //01010110
+    x86_outb (0x0a, 0x02);  //unmask DMA channel 2
+}
+
+void flpydsk_check_int (uint32_t* st0, uint32_t* cyl) {
+ 
+	fdc_write (8);
+ 
+	*st0 = flpydsk_read_data ();
+	*cyl = flpydsk_read_data ();
+}
+
+void fdc_specify(uint8_t srt_hut, uint8_t hlt_nd) 
+{
+    fdc_write(FDC_CMD_SPECIFY);     
+    fdc_write(srt_hut);   
+    fdc_write(hlt_nd);    
+}
+
+int fdc_write(uint8_t cmd)
+{   
+    uint32_t timeout = 10000;
+    while (timeout--) {
+        uint8_t msr = x86_inb(MAIN_STATUS_REGISTER);
+        if ((msr & 0x80) && !(msr & 0x40)) { // RQM=1, DIO=0
+            x86_outb(DATA_FIFO, cmd);
+            return 1;
+        }
+    }
+    printf("FDC write timeout!\n");
+    return 0;
+}
+
+uint8_t flpydsk_read_data () {
+    
+    uint32_t timeout = 10000;
+    while (timeout--) {
+        uint8_t msr = x86_inb(0x3F4);
+        if ((msr & 0x80) && (msr & 0x40)) { // RQM=1, DIO=1
+            return x86_inb(DATA_FIFO);
+        }
+    }
+    printf("FDC write timeout!\n");
+}
+
+void start_motor(uint8_t drive) {
+    uint8_t dor_value = 0x0C;  // Enable FDC + DMA/IRQ (bits 2 and 3 set)
+    dor_value |= (drive & 0x03); // Select drive 0-3
+    dor_value |= (1 << (4 + drive)); // Turn on that drive's motor
+    x86_outb(DIGITAL_OUTPUT_REGISTER, dor_value);
 }

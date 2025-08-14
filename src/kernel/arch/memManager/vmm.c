@@ -97,7 +97,7 @@ void vmmngr_unmap_page(void* virt)
 }
 
 bool fault_handler(void* virt){
-    printf("in the handler \n");
+    
     void* phys = (void *) alloc_block();
     return vmmngr_map_page(phys, virt);
 }

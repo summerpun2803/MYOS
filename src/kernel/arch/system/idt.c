@@ -25,8 +25,7 @@ IDT_Descriptor descriptor={sizeof(idt)-1, idt};
 void irq_handler(uint32_t int_no, uint32_t dummy)
 {
     if (int_no == 0){
-        printf(".");
-
+        
     }else if(int_no == 6){
         g_fdc_irq_happened = true;
     }
