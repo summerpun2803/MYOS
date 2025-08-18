@@ -37,6 +37,7 @@ enum FLPYDSK_CMD {
 	FDC_CMD_CHECK_INT		=	8,
 	FDC_CMD_WRITE_DEL_S		=	9,
 	FDC_CMD_READ_ID_S		=	0xa,
+	FDC_CMD_CONFIGURE 		=   19,
 	FDC_CMD_READ_DEL_S		=	0xc,
 	FDC_CMD_FORMAT_TRACK	=	0xd,
 	FDC_CMD_SEEK			=	0xf
@@ -47,3 +48,5 @@ void FDA_Init();
 void flpydsk_check_int (uint32_t* st0, uint32_t* cyl);
 int fdc_write(uint8_t cmd);
 uint8_t flpydsk_read_data ();
+void FDC_read(uint32_t lba);
+void test_floppy_read();

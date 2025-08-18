@@ -18,6 +18,6 @@ void Hal_init()
     detect_floppies();
     x86_test();  
     FDA_Init();
-    DMA_Init();
+    test_floppy_read();
     
 }
