@@ -49,4 +49,3 @@ void flpydsk_check_int (uint32_t* st0, uint32_t* cyl);
 int fdc_write(uint8_t cmd);
 uint8_t flpydsk_read_data ();
 void FDC_read(uint32_t lba);
-void test_floppy_read();

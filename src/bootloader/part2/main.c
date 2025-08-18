@@ -37,7 +37,6 @@ void __attribute__((cdecl)) _cstart_ (uint16_t bootDrive){
         goto end;
     }
     printf("STAGE 2: FAT Initailization Done\n");
-
     FAT_File* fd = FAT_Open(&disk, "/kernel.bin");
     uint32_t size;
     uint8_t *Kernel = KernelAddr;

@@ -95,7 +95,7 @@ bool FAT_Initialize(DISK *disk)
     }
     uint32_t sectors = (rootDirSize + g_Data->BS.BootSector.BytesPerSector - 1) / g_Data->BS.BootSector.BytesPerSector;
     g_RootDirectoryEnd = rootDirLba + sectors;
-    
+    printf("ROOT DIR LBA: %l \n", rootDirLba);
     for(int i=0; i<10; i++){
         g_Data->OpenedFiles[i].Opened = false;
     }

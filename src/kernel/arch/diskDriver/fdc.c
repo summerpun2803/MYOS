@@ -127,7 +127,7 @@ void FDA_Init()
     delay_ms(100);
 
     FDC_recalibrate(0);
-    printf("\nhere\n");
+    // printf("\nhere\n");
 
 }
 
@@ -207,16 +207,3 @@ void start_motor(uint8_t drive) {
     x86_outb(DIGITAL_OUTPUT_REGISTER, dor_value);
 }
 
-void test_floppy_read() {
-    printf("Attempting to read sector 0 from floppy...\n");
-
-    FDC_read(0);
-    printf("Read success!\n");
-
-    unsigned char* dma_buffer = (unsigned char*)0x1000;
-    
-    for (int i = 500; i < 512; i++) 
-        printf("%x ", dma_buffer[i]);
-
-    printf("\n");
-}

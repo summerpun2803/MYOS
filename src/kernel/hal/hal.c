@@ -6,6 +6,7 @@
 #include <arch/memManager/vmm.h>
 #include <arch/diskDriver/utils.h>
 #include <arch/diskDriver/fdc.h>
+#include <arch/fileSystem/fs.h>
 
 void Hal_init()
 {
